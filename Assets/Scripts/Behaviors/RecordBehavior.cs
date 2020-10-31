@@ -31,8 +31,6 @@ public class RecordBehavior : MonoBehaviour
     {
 
       if(isRecord){
-        //string inputValue = inputField.text;
-        //string filename = "Assets/Datas/Behaviors/" + inputValue + ".txt";
         string filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
         if(!File.Exists(filename))
         {

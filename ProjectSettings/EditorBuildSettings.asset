@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Behavior.unity
     guid: 95f7bbed9cc44442d929fdc8d9258c7b
+  - enabled: 1
+    path: Assets/Scenes/AddBehavior.unity
+    guid: 922ee2d7225874925ba552acec2e18e2
+  - enabled: 1
+    path: Assets/Scenes/ViewBehavior.unity
+    guid: 7270ef17f2a974ac2b8c4716c7269149
   m_configObjects: {}
