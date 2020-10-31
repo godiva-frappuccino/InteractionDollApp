@@ -41,17 +41,6 @@ public class RecordBehavior : MonoBehaviour
           var pos = transform.position;
           Vector3 m_accel = Input.acceleration;
           Gyroscope m_gyro = Input.gyro;
-          if(false)
-          {
-            Debug.Log("Accel: " + m_accel);
-            var moveX = m_accel.x * Time.deltaTime * Time.deltaTime;
-            var moveY = m_accel.y * Time.deltaTime * Time.deltaTime;
-            var moveZ = m_accel.z * Time.deltaTime * Time.deltaTime;
-            pos.x += moveX;
-            pos.y += moveY;
-            pos.z += moveZ;
-            transform.position = pos;
-          }
           if(m_gyro != null)
           {
             Debug.Log("Gyro: " + m_gyro.attitude);
@@ -65,6 +54,7 @@ public class RecordBehavior : MonoBehaviour
           writer.Close();
         }
       }
+
     }// Start is called before the first frame update
     public void StartRecord()
     {
