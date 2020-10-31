@@ -38,13 +38,6 @@ public class MoveBySensor : MonoBehaviour
         float y = -m_gyro.attitude.y;
         float z = m_gyro.attitude.z;
         float w = m_gyro.attitude.w;
-        //transform.rotation = m_gyro.attitude;
-        // adjust rotation to screen
-        /*
-        transform.rotation = new Quaternion(x, y, z, w);
-        transform.Rotate(new Vector3(1, 0, 0), 90);
-        */
-        //transform.rotation = m_gyro.attitude;
         transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
 
       }
