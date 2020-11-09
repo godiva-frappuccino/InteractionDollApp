@@ -33,7 +33,6 @@ public class MoveBySensor : MonoBehaviour
       }
       if(m_gyro != null)
       {
-        Debug.Log("Gyro: " + m_gyro.attitude);
         float x = -m_gyro.attitude.x;
         float y = -m_gyro.attitude.y;
         float z = m_gyro.attitude.z;

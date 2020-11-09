@@ -59,6 +59,7 @@ public class PlayBehavior : MonoBehaviour
           return;
         }
         string m_gyro_txt = ReadNextLine(nowLine);
+        // in playing, only read data.(preprocess has already done.)
         float x = float.Parse(m_gyro_txt.Split(',')[0].Replace("(",""));
         float y = float.Parse(m_gyro_txt.Split(',')[1]);
         float z = float.Parse(m_gyro_txt.Split(',')[2]);
@@ -67,7 +68,7 @@ public class PlayBehavior : MonoBehaviour
         if(m_gyro_txt != null)
         {
           Debug.Log("Running transform");
-          kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(-x, -y, z, w));
+          kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
         }
         nowLine++;
       }
