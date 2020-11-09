@@ -10,6 +10,8 @@ public class RecordBehavior : MonoBehaviour
     bool isRecord;
     InputField inputField;
     Text displayText;
+    Text timerText;
+    float timerTime;
     string behaviorName = "";
     void Start()
     {
@@ -18,6 +20,9 @@ public class RecordBehavior : MonoBehaviour
 
       displayText = GameObject.Find("DisplayText").GetComponent<Text>();
       displayText.enabled = false;
+      timerText = GameObject.Find("TimerText").GetComponent<Text>();
+      timerText.text = "0";
+      timerText.enabled = false;
 
 
       var pos = transform.position;
@@ -31,6 +36,9 @@ public class RecordBehavior : MonoBehaviour
     {
 
       if(isRecord){
+        timerTime += Time.deltaTime;
+        timerText.text = timerTime.ToString("F3");
+        Debug.Log(timerText.text);
         string filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
         if(!File.Exists(filename))
         {
@@ -59,10 +67,13 @@ public class RecordBehavior : MonoBehaviour
     public void StartRecord()
     {
       isRecord = true;
+      timerTime = 0.0f;
+      timerText.enabled = true;
     }
     public void FinishRecord()
     {
       isRecord = false;
+      timerText.enabled = false;
     }
     public void getInputValue()
     {

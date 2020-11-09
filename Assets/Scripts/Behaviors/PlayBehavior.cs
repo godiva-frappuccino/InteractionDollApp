@@ -27,7 +27,6 @@ public class PlayBehavior : MonoBehaviour
       displayText.enabled = false;
       filenameText.text = Path.GetFileName(ScrollViewController.selectedFilePath);
 
-
       var pos = transform.position;
       Vector3 m_accel = Input.acceleration;
       Input.gyro.enabled = true;
