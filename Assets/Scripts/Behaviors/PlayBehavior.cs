@@ -14,18 +14,18 @@ public class PlayBehavior : MonoBehaviour
     int nowLine;
     public GameObject kawauso;
     List<string> behaviorTextData;
-    InputField inputField;
     Text displayText;
-    string behaviorName = "";
+    Text filenameText;
     void Start()
     {
       isPlay = false;
       isFileSet = false;
       behaviorTextData = new List<string>(){};
-      inputField = GameObject.Find("InputField").GetComponent<InputField>();
 
       displayText = GameObject.Find("DisplayText").GetComponent<Text>();
+      filenameText = GameObject.Find("FilenameText").GetComponent<Text>();
       displayText.enabled = false;
+      filenameText.text = Path.GetFileName(ScrollViewController.selectedFilePath);
 
 
       var pos = transform.position;
@@ -39,7 +39,7 @@ public class PlayBehavior : MonoBehaviour
     {
       Debug.Log("Playing" + isPlay);
       if(isPlay){
-        string filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
+        string filename = ScrollViewController.selectedFilePath;
         if(!File.Exists(filename))
         {
           FinishPlayer();
@@ -105,12 +105,7 @@ public class PlayBehavior : MonoBehaviour
       isFileSet = false;
 
     }
-    public void getInputValue()
-    {
-      Debug.Log("GET CALLED");
-      inputField = GameObject.Find("InputField").GetComponent<InputField>();
-      behaviorName = inputField.text;
-    }
+
     public void SetActiveText(bool value)
     {
       bool isActive = value;

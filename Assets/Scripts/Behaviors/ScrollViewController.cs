@@ -10,9 +10,11 @@ public class ScrollViewController : MonoBehaviour
     public GameObject buttonPrefab;
     public GameObject popUp;
     public Button removeFileButton;
+    public static string selectedFilePath;
     // Start is called before the first frame update
     void Start()
     {
+      selectedFilePath = null;
       UpdateList();
       SetActivePopUp(false);
     }
@@ -48,6 +50,7 @@ public class ScrollViewController : MonoBehaviour
     }
     public void ViewPopUp(string name, string path)
     {
+      selectedFilePath = path;
       Debug.Log("popup: " + name + ":" + path);
       SetActivePopUp(true);
       popUp.GetComponentInChildren<Text>().text = name;
