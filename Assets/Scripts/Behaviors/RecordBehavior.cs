@@ -13,6 +13,7 @@ public class RecordBehavior : MonoBehaviour
     Text timerText;
     float timerTime;
     string behaviorName = "";
+    float limitTime = 3.0f;
     void Start()
     {
       isRecord = false;
@@ -37,9 +38,14 @@ public class RecordBehavior : MonoBehaviour
 
       if(isRecord){
         timerTime += Time.deltaTime;
+        if(timerTime > limitTIme)
+        {
+          FinishRecord();
+        }
         timerText.text = timerTime.ToString("F3");
         Debug.Log(timerText.text);
         string filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
+        if
         if(!File.Exists(filename))
         {
           File.CreateText(filename).Dispose();
