@@ -13,7 +13,7 @@ public class RecordBehavior : MonoBehaviour
     Text timerText;
     float timerTime;
     string behaviorName = "";
-    float limitTime = 3.0f;
+    float limitTime = 5.0f;
     void Start()
     {
       isRecord = false;
