@@ -14,13 +14,13 @@ public class PlayBehavior : MonoBehaviour
     int nowLine;
     public GameObject kawauso;
     List<string> behaviorTextData;
+    List<Quaternion> attitudeList;
     Text displayText;
     Text filenameText;
     void Start()
     {
       isPlay = false;
       isFileSet = false;
-      behaviorTextData = new List<string>(){};
 
       displayText = GameObject.Find("DisplayText").GetComponent<Text>();
       filenameText = GameObject.Find("FilenameText").GetComponent<Text>();
@@ -28,9 +28,6 @@ public class PlayBehavior : MonoBehaviour
       filenameText.text = Path.GetFileName(ScrollViewController.selectedFilePath);
 
       var pos = transform.position;
-      Vector3 m_accel = Input.acceleration;
-      Input.gyro.enabled = true;
-      Gyroscope m_gyro = Input.gyro;
     }
 
     // Update is called once per frame
@@ -47,55 +44,38 @@ public class PlayBehavior : MonoBehaviour
         if(!isFileSet)
         {
           Debug.Log("setting file…");
-          SetFile(filename);
+          attitudeList = getAttitudeList(filename);
           isFileSet = true;
           nowLine = 0;
           return;
         }
-        if(nowLine >= lineCounter)
+        if(nowLine >= attitudeList.Count())
         {
           Debug.Log("Read file finished…");
           FinishPlayer();
           return;
         }
-        // TODO: fix string to attitudeList
-        string m_gyro_txt = ReadNextLine(nowLine);
         // in playing, only read data.(preprocess has already done.)
-        float x = float.Parse(m_gyro_txt.Split(',')[0].Replace("(",""));
-        float y = float.Parse(m_gyro_txt.Split(',')[1]);
-        float z = float.Parse(m_gyro_txt.Split(',')[2]);
-        float w = float.Parse(m_gyro_txt.Split(',')[3].Replace(")",""));
-
-        if(m_gyro_txt != null)
-        {
-          Debug.Log("Running transform");
-          kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
-        }
+        kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (attitudeList[nowLine]);
         nowLine++;
       }
     }
-    public void SetFile(string path)
-    {
-      string line;
-      lineCounter = 0;
-      System.IO.StreamReader file = new System.IO.StreamReader(path);
-      while((line = file.ReadLine()) != null)
-      {
-        behaviorTextData.Add(line);
-        lineCounter++;
-      }
-      Debug.Log("Set data: " + behaviorTextData);
 
-      file.Close();
-    }
-    public string ReadNextLine(int line)
-    {
-      return behaviorTextData[line];
-    }
-    // TODO: implement
     List<Quaternion> getAttitudeList(string filepath)
     {
       List<Quaternion> attitudeList = new List<Quaternion>();
+      System.IO.StreamReader file = new System.IO.StreamReader(filepath);
+      string line;
+      while((line = file.ReadLine()) != null)
+      {
+        float x = float.Parse(line.Split(',')[0].Replace("(",""));
+        float y = float.Parse(line.Split(',')[1]);
+        float z = float.Parse(line.Split(',')[2]);
+        float w = float.Parse(line.Split(',')[3].Replace(")",""));
+        attitudeList.Add(new Quaternion(x,y,z,w));
+        lineCounter++;
+      }
+      file.Close();
       return attitudeList;
     }
     public void StartPlayer()
@@ -107,7 +87,7 @@ public class PlayBehavior : MonoBehaviour
       isPlay = false;
       if(isFileSet)
       {
-        behaviorTextData.Clear();
+        attitudeList.Clear();
       }
       isFileSet = false;
 
