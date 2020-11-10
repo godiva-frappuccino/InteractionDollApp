@@ -58,6 +58,7 @@ public class PlayBehavior : MonoBehaviour
           FinishPlayer();
           return;
         }
+        // TODO: fix string to attitudeList
         string m_gyro_txt = ReadNextLine(nowLine);
         // in playing, only read data.(preprocess has already done.)
         float x = float.Parse(m_gyro_txt.Split(',')[0].Replace("(",""));
@@ -90,6 +91,12 @@ public class PlayBehavior : MonoBehaviour
     public string ReadNextLine(int line)
     {
       return behaviorTextData[line];
+    }
+    // TODO: implement
+    List<Quaternion> getAttitudeList(string filepath)
+    {
+      List<Quaternion> attitudeList = new List<Quaternion>();
+      return attitudeList;
     }
     public void StartPlayer()
     {

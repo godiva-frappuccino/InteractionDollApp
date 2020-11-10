@@ -13,6 +13,7 @@ public class RecordBehavior : MonoBehaviour
     Text timerText;
     float timerTime;
     string behaviorName = "";
+    string filename;
     float limitTime = 5.0f;
     void Start()
     {
@@ -43,7 +44,7 @@ public class RecordBehavior : MonoBehaviour
           FinishRecord();
         }
         timerText.text = timerTime.ToString("F3");
-        string filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
+        filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
         if(!File.Exists(filename))
         {
           File.CreateText(filename).Dispose();
@@ -56,13 +57,11 @@ public class RecordBehavior : MonoBehaviour
           if(m_gyro != null)
           {
             Debug.Log("Gyro: " + m_gyro.attitude);
-            // preprocess only recording
-            float x = -m_gyro.attitude.x;
-            float y = -m_gyro.attitude.y;
-            float z = m_gyro.attitude.z;
-            float w = m_gyro.attitude.w;
-            transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
-            string toWrite = x.ToString("F3") + "," + y.ToString("F3") + "," + z.ToString("F3") + "," + w.ToString("F3");
+            Quaternion processed = Preprocess(m_gyro.attitude);
+            // for displaying
+            transform.rotation = Quaternion.Euler(90, 0, 0) * processed;
+            //transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
+            string toWrite = processed.x.ToString("F3") + "," + processed.y.ToString("F3") + "," + processed.z.ToString("F3") + "," + processed.w.ToString("F3");
             Debug.Log("ToWrite: " + toWrite);
             writer.WriteLine(toWrite);
             //writer.WriteLine(m_gyro.attitude);
@@ -84,6 +83,11 @@ public class RecordBehavior : MonoBehaviour
       isRecord = false;
       displayText.enabled = false;
       timerText.enabled = false;
+      MakeWavFile(filename);
+    }
+    void MakeWavFile(string filename)
+    {
+      // TODO: implement
     }
     public void getInputValue()
     {
@@ -95,6 +99,14 @@ public class RecordBehavior : MonoBehaviour
     {
       bool isActive = value;
       displayText.enabled = value;
+    }
+    Quaternion Preprocess(Quaternion attitude)
+    {
+      float x = -attitude.x;
+      float y = -attitude.y;
+      float z = attitude.z;
+      float w = attitude.w;
+      return new Quaternion(x, y, z, w);
     }
 
 }
