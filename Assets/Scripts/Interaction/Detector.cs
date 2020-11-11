@@ -8,10 +8,10 @@ using UnityEngine.UI;
 public class Detector : MonoBehaviour
 {
     Gyroscope m_gyro;
-    // TODO: how to convert queue to list
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
     int maxQueueSize = 30;
-
+    float lastSpeakedTime;
+    float minSpeakSpan = 3.0f;
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
 
@@ -21,6 +21,7 @@ public class Detector : MonoBehaviour
       m_gyro = Input.gyro;
       attitudeQueue.Enqueue(m_gyro.attitude);
       wavAndAttitudeFileList = getWavAndAttitudeFileList();
+      lastSpeakedTime = Time.time;
     }
 
     // Update is called once per frame
@@ -41,43 +42,88 @@ public class Detector : MonoBehaviour
         }
       }
       bool alreadySayFlag = false;
+
+      List<Quaternion> sensorAttitudeList = new List<Quaternion>();
+      sensorAttitudeList.AddRange(attitudeQueue.ToArray());
+      if(sensorAttitudeList.Count < maxQueueSize)
+      {
+        return;
+      }
+      if(Time.time - lastSpeakedTime < minSpeakSpan)
+      {
+        return;
+      }
       foreach(FileStructure file in wavAndAttitudeFileList)
       {
-        // TODO: fix params
-        double similarlity = getSimilarlity(file.attitudeList, file.attitudeList);
+        double similarlity = getSimilarlity(sensorAttitudeList, file.attitudeList);
         if(similarlity > 0.5 && !alreadySayFlag)
         {
+          Debug.Log("Similar:" + file.attitudeFilePath);
           // TODO: implement
           // say(wavFilePath);
           alreadySayFlag = true;
+          lastSpeakedTime = Time.time;
+          Debug.Log("LastTime:" + lastSpeakedTime);
         }
       }
     }
-
     List<FileStructure> getWavAndAttitudeFileList()
     {
       string path = "Assets/Datas/Behaviors/";
       string[] wavFilesPath = Directory.GetFiles(path, "*.wav");
       string[] attitudeFilesPath = Directory.GetFiles(path, "*.txt");
+      Debug.Log(attitudeFilesPath.Length);
       List<FileStructure> fileList = new List<FileStructure>();
-      for(int i = 0; i < wavFilesPath.Length; i++)
+      for(int i = 0; i < attitudeFilesPath.Length; i++)
       {
         FileStructure file;
         file.attitudeList = getAttitudeList(attitudeFilesPath[i]);
-        file.wavFilePath = wavFilesPath[i];
+        // TODO: fix type
+        file.wavFilePath = "None";
+        file.attitudeFilePath = attitudeFilesPath[i];
         fileList.Add(file);
       }
+      Debug.Log("Reading file done…");
       return fileList;
     }
-    List<Quaternion> getAttitudeList(string path)
+    List<Quaternion> getAttitudeList(string filepath)
     {
       List<Quaternion> attitudeList = new List<Quaternion>();
+      System.IO.StreamReader file = new System.IO.StreamReader(filepath);
+      string line;
+      while((line = file.ReadLine()) != null)
+      {
+        float x = float.Parse(line.Split(',')[0].Replace("(",""));
+        float y = float.Parse(line.Split(',')[1]);
+        float z = float.Parse(line.Split(',')[2]);
+        float w = float.Parse(line.Split(',')[3].Replace(")",""));
+        attitudeList.Add(new Quaternion(x,y,z,w));
+      }
+      file.Close();
       return attitudeList;
     }
-    double getSimilarlity(List<Quaternion> a1, List<Quaternion> a2)
+    double getSimilarlity(List<Quaternion> sensorList, List<Quaternion> storedList)
     {
       // TODO: implement
-      return 0.0f;
+      float diffSum = 0.0f;
+      int minListLength = Math.Min(storedList.Count, sensorList.Count);
+      for(int i=0; i < minListLength; i++)
+      {
+        diffSum += (float)Math.Sqrt(Math.Abs(getGyroDiff(sensorList[i], storedList[i])));
+      }
+      float diffAverage = diffSum / minListLength;
+
+      return 1 - diffAverage;
+    }
+    float getGyroDiff(Quaternion q1, Quaternion q2)
+    {
+      float diffSum = 0.0f;
+      diffSum += Mathf.Pow(q1.x - q2.x, 2);
+      diffSum += Mathf.Pow(q1.y - q2.y, 2);
+      diffSum += Mathf.Pow(q1.z - q2.z, 2);
+      diffSum += Mathf.Pow(q1.w - q2.w, 2);
+      diffSum = (float)Math.Sqrt(diffSum);
+      return diffSum;
     }
     List<Quaternion> readFile(string path)
     {
@@ -92,7 +138,7 @@ public class Detector : MonoBehaviour
       float w = attitude.w;
       return new Quaternion(x, y, z, w);
     }
-    void Voice()
+    void Voice(string name)
     {
       // TODO: implement
     }
@@ -101,6 +147,7 @@ public class Detector : MonoBehaviour
 
 public struct FileStructure
 {
+  public string attitudeFilePath;
   public string wavFilePath;
   public List<Quaternion> attitudeList;
 }
