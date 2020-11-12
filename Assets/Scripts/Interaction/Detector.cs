@@ -8,16 +8,19 @@ using UnityEngine.UI;
 public class Detector : MonoBehaviour
 {
     Gyroscope m_gyro;
+    GameObject kawauso;
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
-    int maxQueueSize = 30;
+    int maxQueueSize = 500;
     float lastSpeakedTime;
     float minSpeakSpan = 3.0f;
+    bool flag = true;
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
 
     // Start is called before the first frame update
     void Start()
     {
+      kawauso = GameObject.Find("kawauso_for_app2");
       m_gyro = Input.gyro;
       attitudeQueue.Enqueue(m_gyro.attitude);
       wavAndAttitudeFileList = getWavAndAttitudeFileList();
@@ -28,10 +31,10 @@ public class Detector : MonoBehaviour
     void Update()
     {
       m_gyro = Input.gyro;
-      // TODO: implement time.sleep(while saying word);
       if(m_gyro != null)
       {
-        Quaternion processed = Preprocess(m_gyro.attitude);
+        //Quaternion processed = Preprocess(m_gyro.attitude);
+        Quaternion processed = kawauso.transform.rotation;
         attitudeQueue.Enqueue(processed);
       }
       if(attitudeQueue.Count > maxQueueSize)
@@ -49,6 +52,12 @@ public class Detector : MonoBehaviour
       {
         return;
       }
+      if(flag)
+      {
+        RecordValuesInEuler(wavAndAttitudeFileList[0].attitudeList, "./stored_rot.csv");
+        RecordValuesInEuler(sensorAttitudeList, "./sensor_rot.csv");
+        flag = false;
+      }
       if(Time.time - lastSpeakedTime < minSpeakSpan)
       {
         return;
@@ -56,6 +65,7 @@ public class Detector : MonoBehaviour
       foreach(FileStructure file in wavAndAttitudeFileList)
       {
         double similarlity = getSimilarlity(sensorAttitudeList, file.attitudeList);
+        Debug.Log(file.attitudeFilePath + ":" + similarlity);
         if(similarlity > 0.5 && !alreadySayFlag)
         {
           Debug.Log("Similar:" + file.attitudeFilePath);
@@ -63,7 +73,6 @@ public class Detector : MonoBehaviour
           // say(wavFilePath);
           alreadySayFlag = true;
           lastSpeakedTime = Time.time;
-          Debug.Log("LastTime:" + lastSpeakedTime);
         }
       }
     }
@@ -109,11 +118,11 @@ public class Detector : MonoBehaviour
       int minListLength = Math.Min(storedList.Count, sensorList.Count);
       for(int i=0; i < minListLength; i++)
       {
-        diffSum += (float)Math.Sqrt(Math.Abs(getGyroDiff(sensorList[i], storedList[i])));
+        diffSum += (float)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
       }
       float diffAverage = diffSum / minListLength;
 
-      return 1 - diffAverage;
+      return 1 / diffAverage;
     }
     float getGyroDiff(Quaternion q1, Quaternion q2)
     {
@@ -124,6 +133,46 @@ public class Detector : MonoBehaviour
       diffSum += Mathf.Pow(q1.w - q2.w, 2);
       diffSum = (float)Math.Sqrt(diffSum);
       return diffSum;
+    }
+    void RecordValuesInEuler(List<Quaternion> quaternionList, string filePath)
+    {
+      using(StreamWriter writer = new StreamWriter(filePath, true))
+      {
+        foreach(Quaternion quat in quaternionList)
+        {
+          Vector3 rot = quat.eulerAngles;
+          Debug.Log(rot.x + ":" + rot.y + ":" + rot.z);
+
+          float yaw = Mathf.Atan2(2 * (quat.x * quat.y * quat.w * quat.z), quat.w * quat.w + quat.x * quat.x - quat.y * quat.y - quat.z * quat.z );
+          float pitch = Mathf.Asin(2 * (quat.w * quat.y - quat.x * quat.z));
+          float roll = Mathf.Atan2(2 * (quat.y * quat.z * quat.w * quat.x), quat.w * quat.w + quat.x * quat.x - quat.y * quat.y - quat.z * quat.z );
+          yaw *= 180f;
+          pitch *= 180f;
+          roll *= 180f;
+
+          string toWrite = rot.x.ToString("F") + "," + rot.y.ToString("F") + "," + rot.z.ToString("F");
+          //string toWrite = yaw.ToString("F") + "," + pitch.ToString("F") + "," + roll.ToString("F");
+          Debug.Log("ToWrite: " + toWrite);
+          writer.WriteLine(toWrite);
+          //writer.WriteLine(m_gyro.attitude);
+          }
+        writer.Close();
+      }
+    }
+
+    void RecordValues(List<Quaternion> quaternionList, string filePath)
+    {
+      using(StreamWriter writer = new StreamWriter(filePath, true))
+      {
+        foreach(Quaternion quat in quaternionList)
+        {
+          string toWrite = quat.x.ToString("F3") + "," + quat.y.ToString("F3") + "," + quat.z.ToString("F3") + "," + quat.w.ToString("F3");
+          Debug.Log("ToWrite: " + toWrite);
+          writer.WriteLine(toWrite);
+          //writer.WriteLine(m_gyro.attitude);
+          }
+        writer.Close();
+      }
     }
     List<Quaternion> readFile(string path)
     {
@@ -142,7 +191,6 @@ public class Detector : MonoBehaviour
     {
       // TODO: implement
     }
-
 }
 
 public struct FileStructure

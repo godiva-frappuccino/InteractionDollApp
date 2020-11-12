@@ -17,9 +17,9 @@ public class MoveBySensor : MonoBehaviour
     void Update()
     {
       var pos = transform.position;
-      Vector3 m_accel = Input.acceleration;
+      //Vector3 m_accel = Input.acceleration;
       Gyroscope m_gyro = Input.gyro;
-
+      /*
       if(false)
       {
         Debug.Log("Accel: " + m_accel);
@@ -31,6 +31,7 @@ public class MoveBySensor : MonoBehaviour
         pos.z += moveZ;
         transform.position = pos;
       }
+      */
       if(m_gyro != null)
       {
         float x = -m_gyro.attitude.x;
