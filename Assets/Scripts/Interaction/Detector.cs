@@ -33,9 +33,8 @@ public class Detector : MonoBehaviour
       m_gyro = Input.gyro;
       if(m_gyro != null)
       {
-        //Quaternion processed = Preprocess(m_gyro.attitude);
-        Quaternion processed = kawauso.transform.rotation;
-        attitudeQueue.Enqueue(processed);
+        Quaternion position = kawauso.transform.rotation;
+        attitudeQueue.Enqueue(position);
       }
       if(attitudeQueue.Count > maxQueueSize)
       {
@@ -143,33 +142,9 @@ public class Detector : MonoBehaviour
           Vector3 rot = quat.eulerAngles;
           Debug.Log(rot.x + ":" + rot.y + ":" + rot.z);
 
-          float yaw = Mathf.Atan2(2 * (quat.x * quat.y * quat.w * quat.z), quat.w * quat.w + quat.x * quat.x - quat.y * quat.y - quat.z * quat.z );
-          float pitch = Mathf.Asin(2 * (quat.w * quat.y - quat.x * quat.z));
-          float roll = Mathf.Atan2(2 * (quat.y * quat.z * quat.w * quat.x), quat.w * quat.w + quat.x * quat.x - quat.y * quat.y - quat.z * quat.z );
-          yaw *= 180f;
-          pitch *= 180f;
-          roll *= 180f;
-
           string toWrite = rot.x.ToString("F") + "," + rot.y.ToString("F") + "," + rot.z.ToString("F");
-          //string toWrite = yaw.ToString("F") + "," + pitch.ToString("F") + "," + roll.ToString("F");
           Debug.Log("ToWrite: " + toWrite);
           writer.WriteLine(toWrite);
-          //writer.WriteLine(m_gyro.attitude);
-          }
-        writer.Close();
-      }
-    }
-
-    void RecordValues(List<Quaternion> quaternionList, string filePath)
-    {
-      using(StreamWriter writer = new StreamWriter(filePath, true))
-      {
-        foreach(Quaternion quat in quaternionList)
-        {
-          string toWrite = quat.x.ToString("F3") + "," + quat.y.ToString("F3") + "," + quat.z.ToString("F3") + "," + quat.w.ToString("F3");
-          Debug.Log("ToWrite: " + toWrite);
-          writer.WriteLine(toWrite);
-          //writer.WriteLine(m_gyro.attitude);
           }
         writer.Close();
       }

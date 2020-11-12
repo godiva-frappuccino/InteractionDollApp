@@ -15,10 +15,12 @@ public class RecordBehavior : MonoBehaviour
     string behaviorName = "";
     string filename;
     float limitTime = 5.0f;
+    GameObject kawauso;
     void Start()
     {
       isRecord = false;
       inputField = GameObject.Find("InputField").GetComponent<InputField>();
+      kawauso = GameObject.Find("kawauso_for_app2");
 
       displayText = GameObject.Find("DisplayText").GetComponent<Text>();
       displayText.enabled = false;
@@ -56,12 +58,10 @@ public class RecordBehavior : MonoBehaviour
           Gyroscope m_gyro = Input.gyro;
           if(m_gyro != null)
           {
-            Debug.Log("Gyro: " + m_gyro.attitude);
-            Quaternion processed = Preprocess(m_gyro.attitude);
-            // for displaying
-            transform.rotation = Quaternion.Euler(90, 0, 0) * processed;
-            //transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
-            string toWrite = processed.x.ToString("F3") + "," + processed.y.ToString("F3") + "," + processed.z.ToString("F3") + "," + processed.w.ToString("F3");
+            //Quaternion processed = Preprocess(m_gyro.attitude);
+            Quaternion trans = kawauso.transform.rotation;
+            //string toWrite = processed.x.ToString("F3") + "," + processed.y.ToString("F3") + "," + processed.z.ToString("F3") + "," + processed.w.ToString("F3");
+            string toWrite = trans.x.ToString("F3") + "," + trans.y.ToString("F3") + "," + trans.z.ToString("F3") + "," + trans.w.ToString("F3");
             Debug.Log("ToWrite: " + toWrite);
             writer.WriteLine(toWrite);
             //writer.WriteLine(m_gyro.attitude);
