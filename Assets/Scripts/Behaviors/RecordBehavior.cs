@@ -15,6 +15,7 @@ public class RecordBehavior : MonoBehaviour
     string behaviorName = "";
     string filename;
     float limitTime = 5.0f;
+    int frameCounter = 0;
     GameObject kawauso;
     void Start()
     {
@@ -40,12 +41,13 @@ public class RecordBehavior : MonoBehaviour
     {
 
       if(isRecord){
+        frameCounter += 1;
         timerTime += Time.deltaTime;
         if(timerTime > limitTime)
         {
           FinishRecord();
         }
-        timerText.text = timerTime.ToString("F3");
+        timerText.text = timerTime.ToString("F1");
         filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
         if(!File.Exists(filename))
         {
@@ -84,6 +86,7 @@ public class RecordBehavior : MonoBehaviour
       displayText.enabled = false;
       timerText.enabled = false;
       MakeWavFile(filename);
+      Debug.Log("Finish: " + frameCounter + ":" + (frameCounter/5));
     }
     void MakeWavFile(string filename)
     {

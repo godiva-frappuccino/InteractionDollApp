@@ -10,7 +10,7 @@ public class Detector : MonoBehaviour
     Gyroscope m_gyro;
     GameObject kawauso;
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
-    int maxQueueSize = 500;
+    int maxQueueSize = 50;
     float lastSpeakedTime;
     float minSpeakSpan = 3.0f;
     bool flag = true;
