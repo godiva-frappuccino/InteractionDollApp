@@ -56,7 +56,8 @@ public class PlayBehavior : MonoBehaviour
           return;
         }
         // in playing, only read data.(preprocess has already done.)
-        kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (attitudeList[nowLine]);
+        //kawauso.transform.rotation = Quaternion.Euler(90, 0, 0) * (attitudeList[nowLine]);
+        kawauso.transform.rotation = (attitudeList[nowLine]);
         nowLine++;
       }
     }

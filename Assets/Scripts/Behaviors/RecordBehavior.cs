@@ -60,9 +60,7 @@ public class RecordBehavior : MonoBehaviour
           Gyroscope m_gyro = Input.gyro;
           if(m_gyro != null)
           {
-            //Quaternion processed = Preprocess(m_gyro.attitude);
             Quaternion trans = kawauso.transform.rotation;
-            //string toWrite = processed.x.ToString("F3") + "," + processed.y.ToString("F3") + "," + processed.z.ToString("F3") + "," + processed.w.ToString("F3");
             string toWrite = trans.x.ToString("F3") + "," + trans.y.ToString("F3") + "," + trans.z.ToString("F3") + "," + trans.w.ToString("F3");
             Debug.Log("ToWrite: " + toWrite);
             writer.WriteLine(toWrite);
@@ -103,13 +101,4 @@ public class RecordBehavior : MonoBehaviour
       bool isActive = value;
       displayText.enabled = value;
     }
-    Quaternion Preprocess(Quaternion attitude)
-    {
-      float x = -attitude.x;
-      float y = -attitude.y;
-      float z = attitude.z;
-      float w = attitude.w;
-      return new Quaternion(x, y, z, w);
-    }
-
 }

@@ -53,8 +53,8 @@ public class Detector : MonoBehaviour
       }
       if(flag)
       {
-        RecordValuesInEuler(wavAndAttitudeFileList[0].attitudeList, "./stored_rot.csv");
-        RecordValuesInEuler(sensorAttitudeList, "./sensor_rot.csv");
+        RecordValuesInEuler(wavAndAttitudeFileList[0].attitudeList, "stored_rot.csv");
+        RecordValuesInEuler(sensorAttitudeList, "sensor_rot.csv");
         flag = false;
       }
       if(Time.time - lastSpeakedTime < minSpeakSpan)
@@ -67,7 +67,7 @@ public class Detector : MonoBehaviour
         Debug.Log(file.attitudeFilePath + ":" + similarlity);
         if(similarlity > 0.5 && !alreadySayFlag)
         {
-          Debug.Log("Similar:" + file.attitudeFilePath);
+          Debug.Log("Similar!!!!:" + file.attitudeFilePath);
           // TODO: implement
           // say(wavFilePath);
           alreadySayFlag = true;
@@ -80,7 +80,7 @@ public class Detector : MonoBehaviour
       string path = "Assets/Datas/Behaviors/";
       string[] wavFilesPath = Directory.GetFiles(path, "*.wav");
       string[] attitudeFilesPath = Directory.GetFiles(path, "*.txt");
-      Debug.Log(attitudeFilesPath.Length);
+
       List<FileStructure> fileList = new List<FileStructure>();
       for(int i = 0; i < attitudeFilesPath.Length; i++)
       {
@@ -112,24 +112,24 @@ public class Detector : MonoBehaviour
     }
     double getSimilarlity(List<Quaternion> sensorList, List<Quaternion> storedList)
     {
-      // TODO: implement
-      float diffSum = 0.0f;
+      double diffSum = 0.0;
       int minListLength = Math.Min(storedList.Count, sensorList.Count);
       for(int i=0; i < minListLength; i++)
       {
-        diffSum += (float)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
+        diffSum += (double)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
       }
-      float diffAverage = diffSum / minListLength;
+      double diffAverage = (double)diffSum / (double)minListLength;
 
       return 1 / diffAverage;
     }
     float getGyroDiff(Quaternion q1, Quaternion q2)
     {
       float diffSum = 0.0f;
-      diffSum += Mathf.Pow(q1.x - q2.x, 2);
-      diffSum += Mathf.Pow(q1.y - q2.y, 2);
-      diffSum += Mathf.Pow(q1.z - q2.z, 2);
-      diffSum += Mathf.Pow(q1.w - q2.w, 2);
+      Vector3 r1 = q1.eulerAngles;
+      Vector3 r2 = q2.eulerAngles;
+      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.x - r2.x));
+      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.y - r2.y));
+      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.z - r2.z));
       diffSum = (float)Math.Sqrt(diffSum);
       return diffSum;
     }
@@ -140,27 +140,11 @@ public class Detector : MonoBehaviour
         foreach(Quaternion quat in quaternionList)
         {
           Vector3 rot = quat.eulerAngles;
-          Debug.Log(rot.x + ":" + rot.y + ":" + rot.z);
-
           string toWrite = rot.x.ToString("F") + "," + rot.y.ToString("F") + "," + rot.z.ToString("F");
-          Debug.Log("ToWrite: " + toWrite);
           writer.WriteLine(toWrite);
           }
         writer.Close();
       }
-    }
-    List<Quaternion> readFile(string path)
-    {
-      // TODO: implement
-      return new List<Quaternion>();
-    }
-    Quaternion Preprocess(Quaternion attitude)
-    {
-      float x = -attitude.x;
-      float y = -attitude.y;
-      float z = attitude.z;
-      float w = attitude.w;
-      return new Quaternion(x, y, z, w);
     }
     void Voice(string name)
     {
