@@ -10,10 +10,12 @@ public class Detector : MonoBehaviour
     Gyroscope m_gyro;
     GameObject kawauso;
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
+    Quaternion initialRotation;
     int maxQueueSize = 50;
     float lastSpeakedTime;
     float minSpeakSpan = 3.0f;
-    bool flag = true;
+    bool flag = false;
+    float similarityThresh = 0.80f;
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
 
@@ -21,8 +23,7 @@ public class Detector : MonoBehaviour
     void Start()
     {
       kawauso = GameObject.Find("kawauso_for_app2");
-      m_gyro = Input.gyro;
-      attitudeQueue.Enqueue(m_gyro.attitude);
+      initialRotation = Input.gyro.attitude;
       wavAndAttitudeFileList = getWavAndAttitudeFileList();
       lastSpeakedTime = Time.time;
     }
@@ -33,8 +34,8 @@ public class Detector : MonoBehaviour
       m_gyro = Input.gyro;
       if(m_gyro != null)
       {
-        Quaternion position = kawauso.transform.rotation;
-        attitudeQueue.Enqueue(position);
+        Quaternion rotation = kawauso.transform.rotation;
+        attitudeQueue.Enqueue(rotation * Quaternion.Euler(0, initialRotation.y, 0));
       }
       if(attitudeQueue.Count > maxQueueSize)
       {
@@ -53,8 +54,12 @@ public class Detector : MonoBehaviour
       }
       if(flag)
       {
-        RecordValuesInEuler(wavAndAttitudeFileList[0].attitudeList, "stored_rot.csv");
-        RecordValuesInEuler(sensorAttitudeList, "sensor_rot.csv");
+        for(int i = 0; i < wavAndAttitudeFileList.Count; i++)
+        {
+          double similarlity = getSimilarlity(wavAndAttitudeFileList[i].attitudeList, sensorAttitudeList);
+          RecordValuesInEuler(wavAndAttitudeFileList[i].attitudeList, "data" + i + ".csv");
+        }
+        RecordValuesInEuler(sensorAttitudeList, "sensor.csv");
         flag = false;
       }
       if(Time.time - lastSpeakedTime < minSpeakSpan)
@@ -64,14 +69,14 @@ public class Detector : MonoBehaviour
       foreach(FileStructure file in wavAndAttitudeFileList)
       {
         double similarlity = getSimilarlity(sensorAttitudeList, file.attitudeList);
-        Debug.Log(file.attitudeFilePath + ":" + similarlity);
-        if(similarlity > 0.5 && !alreadySayFlag)
+        //Debug.Log(file.attitudeFilePath + ":" + similarlity);
+        if(similarlity > similarityThresh && !alreadySayFlag)
         {
           Debug.Log("Similar!!!!:" + file.attitudeFilePath);
           // TODO: implement
           // say(wavFilePath);
           alreadySayFlag = true;
-          lastSpeakedTime = Time.time;
+          //lastSpeakedTime = Time.time;
         }
       }
     }
@@ -113,25 +118,20 @@ public class Detector : MonoBehaviour
     double getSimilarlity(List<Quaternion> sensorList, List<Quaternion> storedList)
     {
       double diffSum = 0.0;
+      double thresh = (double)Mathf.Cos(30.0f /180.0f*3.14f);
       int minListLength = Math.Min(storedList.Count, sensorList.Count);
+
       for(int i=0; i < minListLength; i++)
       {
-        diffSum += (double)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
+        Vector3 r1 = sensorList[i].eulerAngles;
+        Vector3 r2 = storedList[i].eulerAngles;
+        if(Mathf.Cos(Mathf.Deg2Rad * (r1.x - r2.x)) < thresh) diffSum += 1.0;
+        else if(Mathf.Cos(Mathf.Deg2Rad * (r1.y - r2.y)) < thresh) diffSum += 1.0;
+        else if(Mathf.Cos(Mathf.Deg2Rad * (r1.z - r2.z)) < thresh) diffSum += 1.0;
+        //diffSum += (double)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
       }
-      double diffAverage = (double)diffSum / (double)minListLength;
-
-      return 1 / diffAverage;
-    }
-    float getGyroDiff(Quaternion q1, Quaternion q2)
-    {
-      float diffSum = 0.0f;
-      Vector3 r1 = q1.eulerAngles;
-      Vector3 r2 = q2.eulerAngles;
-      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.x - r2.x));
-      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.y - r2.y));
-      diffSum += Mathf.Cos(Mathf.Deg2Rad * (r1.z - r2.z));
-      diffSum = (float)Math.Sqrt(diffSum);
-      return diffSum;
+      double diffAverage = diffSum / (double)minListLength;
+      return 1 - diffAverage;
     }
     void RecordValuesInEuler(List<Quaternion> quaternionList, string filePath)
     {
