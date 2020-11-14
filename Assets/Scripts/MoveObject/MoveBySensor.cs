@@ -5,14 +5,20 @@ using UnityEngine;
 public class MoveBySensor : MonoBehaviour
 {
     // Start is called before the first frame update
-    Quaternion initialRotation;
+    Vector3 initialRotationInEuler;
     void Start()
     {
       var pos = transform.position;
       Vector3 m_accel = Input.acceleration;
       Input.gyro.enabled = true;
-      Quaternion initialRotation = Input.gyro.attitude * Quaternion.Euler(90, 0, 0);
-      Debug.Log("Initial pose: " + initialRotation.eulerAngles);
+      Gyroscope m_gyro = Input.gyro;
+      float x = -m_gyro.attitude.x;
+      float y = -m_gyro.attitude.y;
+      float z = m_gyro.attitude.z;
+      float w = m_gyro.attitude.w;
+      transform.rotation = Quaternion.Euler(90, 0, 0) * (new Quaternion(x, y, z, w));
+      initialRotationInEuler = transform.localEulerAngles;
+
     }
 
     // Update is called once per frame
@@ -40,8 +46,7 @@ public class MoveBySensor : MonoBehaviour
         float y = -m_gyro.attitude.y;
         float z = m_gyro.attitude.z;
         float w = m_gyro.attitude.w;
-        float toRotY = initialRotation.eulerAngles.y;
-        Debug.Log(toRotY);
+        float toRotY = -initialRotationInEuler.y;
         transform.rotation = Quaternion.Euler(90, toRotY, 0) * (new Quaternion(x, y, z, w));
       }
     }
