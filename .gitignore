@@ -14,7 +14,13 @@
 !/[Aa]ssets/**/*.meta
 
 # Datas should be ignored because it is personal information
-!/Assets/Datas/Behaviors/*.txt.*
+/Assets/Datas/Behaviors/*.txt*
+/*.cspoj
+/ProjectSettings
+/user.keystore
+/*.sln
+/Temp/
+/Packages/
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*

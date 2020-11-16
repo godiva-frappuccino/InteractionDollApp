@@ -62,7 +62,6 @@ public class RecordBehavior : MonoBehaviour
           {
             Quaternion trans = kawauso.transform.rotation;
             string toWrite = trans.x.ToString("F3") + "," + trans.y.ToString("F3") + "," + trans.z.ToString("F3") + "," + trans.w.ToString("F3");
-            Debug.Log("ToWrite: " + toWrite);
             writer.WriteLine(toWrite);
             //writer.WriteLine(m_gyro.attitude);
             }

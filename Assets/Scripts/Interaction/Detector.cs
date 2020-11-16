@@ -18,6 +18,7 @@ public class Detector : MonoBehaviour
     float similarityThresh = 0.80f;
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
+    //TextToSpeech tts;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,7 @@ public class Detector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+      //tts.Speak("Hello");
       m_gyro = Input.gyro;
       if(m_gyro != null)
       {
@@ -151,7 +153,6 @@ public class Detector : MonoBehaviour
       // TODO: implement
     }
 }
-
 public struct FileStructure
 {
   public string attitudeFilePath;
