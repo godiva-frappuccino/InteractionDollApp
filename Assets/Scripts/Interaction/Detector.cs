@@ -91,17 +91,18 @@ public class Detector : MonoBehaviour
     }
     List<FileStructure> getWavAndAttitudeFileList()
     {
-      string path = "Assets/Datas/Behaviors/";
-      //string[] wavFilesPath = Directory.GetFiles(path, "*.wav");
-      string[] attitudeFilesPath = Directory.GetFiles(path, "*.txt");
-
+      string attitudePath = "Assets/Datas/Behaviors/";
+      string wavPath = "Assets/Resources/Voices/";
+      string[] wavFilesPath = Directory.GetFiles(wavPath, "*.mp3");
+      string[] attitudeFilesPath = Directory.GetFiles(attitudePath, "*.txt");
       List<FileStructure> fileList = new List<FileStructure>();
       for(int i = 0; i < attitudeFilesPath.Length; i++)
       {
         FileStructure file;
         file.attitudeList = getAttitudeList(attitudeFilesPath[i]);
         // TODO: fix type
-        file.wavFilePath = "Voices/cat20";
+        file.wavFilePath = "Voices/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
+        Debug.Log(file.wavFilePath);
         file.attitudeFilePath = attitudeFilesPath[i];
         fileList.Add(file);
       }
