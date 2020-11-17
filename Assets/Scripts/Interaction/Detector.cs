@@ -19,6 +19,8 @@ public class Detector : MonoBehaviour
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
     //TextToSpeech tts;
+    [SerializeField]
+    GameObject voicePrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -77,15 +79,20 @@ public class Detector : MonoBehaviour
           Debug.Log("Similar!!!!:" + file.attitudeFilePath);
           // TODO: implement
           // say(wavFilePath);
+          GameObject obj = Instantiate(voicePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+          AudioSource source = obj.GetComponent<AudioSource>();
+          source.clip = Resources.Load<AudioClip>(file.wavFilePath);
+          source.Play();
+
           alreadySayFlag = true;
-          //lastSpeakedTime = Time.time;
+          lastSpeakedTime = Time.time;
         }
       }
     }
     List<FileStructure> getWavAndAttitudeFileList()
     {
       string path = "Assets/Datas/Behaviors/";
-      string[] wavFilesPath = Directory.GetFiles(path, "*.wav");
+      //string[] wavFilesPath = Directory.GetFiles(path, "*.wav");
       string[] attitudeFilesPath = Directory.GetFiles(path, "*.txt");
 
       List<FileStructure> fileList = new List<FileStructure>();
@@ -94,7 +101,7 @@ public class Detector : MonoBehaviour
         FileStructure file;
         file.attitudeList = getAttitudeList(attitudeFilesPath[i]);
         // TODO: fix type
-        file.wavFilePath = "None";
+        file.wavFilePath = "Voices/cat20";
         file.attitudeFilePath = attitudeFilesPath[i];
         fileList.Add(file);
       }

@@ -889,6 +889,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee91f187f8bf04f43a412dcd12d9ce71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  voicePrefab: {fileID: 6894918488838971237, guid: b4940513c3c804dcc91433c1ba2300a8,
+    type: 3}
 --- !u!4 &1325645538
 Transform:
   m_ObjectHideFlags: 0
