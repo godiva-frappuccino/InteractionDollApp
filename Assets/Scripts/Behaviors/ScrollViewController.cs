@@ -27,7 +27,7 @@ public class ScrollViewController : MonoBehaviour
 
     void UpdateList()
     {
-      string path = "Assets/Datas/Behaviors/";
+      string path = "Assets/Resources/Behaviors/";
       string[] files = Directory.GetFiles(path, "*.txt");
       GameObject contentField = GameObject.Find("Content");
       foreach(Transform buttonTransform in contentField.gameObject.transform)
@@ -41,7 +41,7 @@ public class ScrollViewController : MonoBehaviour
         behaviorButton.gameObject.transform.SetParent(contentField.gameObject.transform, false);
         string removePath = file;
         string behaviorName = Path.GetFileName(file);
-        behaviorButton.GetComponentInChildren<Text>().text = behaviorName;
+        behaviorButton.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(behaviorName);
         behaviorButton.onClick.AddListener(() => {
             this.ViewPopUp(behaviorName, removePath);
         });
@@ -53,7 +53,7 @@ public class ScrollViewController : MonoBehaviour
       selectedFilePath = path;
       Debug.Log("popup: " + name + ":" + path);
       SetActivePopUp(true);
-      popUp.GetComponentInChildren<Text>().text = name;
+      popUp.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(name);
       string removePath = path + "";
       removeFileButton.onClick.RemoveAllListeners();
       removeFileButton.onClick.AddListener(() => {

@@ -25,7 +25,7 @@ public class PlayBehavior : MonoBehaviour
       displayText = GameObject.Find("DisplayText").GetComponent<Text>();
       filenameText = GameObject.Find("FilenameText").GetComponent<Text>();
       displayText.enabled = false;
-      filenameText.text = Path.GetFileName(ScrollViewController.selectedFilePath);
+      filenameText.text = Path.GetFileNameWithoutExtension(ScrollViewController.selectedFilePath);
 
       var pos = transform.position;
     }

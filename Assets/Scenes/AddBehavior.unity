@@ -439,7 +439,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Recording\u2026"
+  m_Text: "\u9332\u753B\u4E2D\u2026"
 --- !u!222 &296264289
 CanvasRenderer:
   m_ObjectHideFlags: 0

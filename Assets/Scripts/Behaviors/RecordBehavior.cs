@@ -48,7 +48,7 @@ public class RecordBehavior : MonoBehaviour
           FinishRecord();
         }
         timerText.text = timerTime.ToString("F1");
-        filename = "Assets/Datas/Behaviors/" + behaviorName + ".txt";
+        filename = "Assets/Resources/Behaviors/" + behaviorName + ".txt";
         if(!File.Exists(filename))
         {
           File.CreateText(filename).Dispose();

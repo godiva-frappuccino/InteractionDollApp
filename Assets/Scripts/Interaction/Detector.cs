@@ -91,7 +91,7 @@ public class Detector : MonoBehaviour
     }
     List<FileStructure> getWavAndAttitudeFileList()
     {
-      string attitudePath = "Assets/Datas/Behaviors/";
+      string attitudePath = "Assets/Resources/Behaviors/";
       string wavPath = "Assets/Resources/Voices/";
       string[] wavFilesPath = Directory.GetFiles(wavPath, "*.mp3");
       string[] attitudeFilesPath = Directory.GetFiles(attitudePath, "*.txt");
