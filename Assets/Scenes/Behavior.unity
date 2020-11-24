@@ -256,7 +256,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u3053\u306EBehavior\u3092\u898B\u308B"
+  m_Text: "\u3053\u306E\u52D5\u4F5C\u3092\u898B\u308B"
 --- !u!222 &171158767
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1005,7 +1005,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Behavior\u306E\u540D\u524D"
+  m_Text: "\u52D5\u4F5C\u306E\u540D\u524D"
 --- !u!222 &761480880
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1375,6 +1375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 447b6e1b0d68d40388ad7bbe67ad1698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneFPS: 15
 --- !u!4 &1299270618
 Transform:
   m_ObjectHideFlags: 0
@@ -1751,7 +1752,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u3053\u306EBehavior\u3092\u524A\u9664\u3059\u308B"
+  m_Text: "\u3053\u306E\u52D5\u4F5C\u3092\u524A\u9664\u3059\u308B"
 --- !u!222 &1446185726
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1829,7 +1830,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Main manu\u306B\u623B\u308B"
+  m_Text: "\u30E1\u30A4\u30F3\u30E1\u30CB\u30E5\u30FC\u306B\u623B\u308B"
 --- !u!222 &1494276861
 CanvasRenderer:
   m_ObjectHideFlags: 0

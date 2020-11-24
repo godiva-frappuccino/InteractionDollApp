@@ -373,7 +373,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Behavior\u306E\u4E00\u89A7"
+  m_Text: "\u52D5\u4F5C\u306E\u4E00\u89A7"
 --- !u!222 &778654438
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -451,7 +451,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Interaction\u306E\u958B\u59CB"
+  m_Text: "\u4F1A\u8A71\u306E\u958B\u59CB"
 --- !u!222 &885501975
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -489,6 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 447b6e1b0d68d40388ad7bbe67ad1698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneFPS: 15
 --- !u!4 &1127442055
 Transform:
   m_ObjectHideFlags: 0

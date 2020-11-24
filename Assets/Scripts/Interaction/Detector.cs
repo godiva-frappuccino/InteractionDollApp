@@ -106,6 +106,12 @@ public class Detector : MonoBehaviour
         file.attitudeFilePath = attitudeFilesPath[i];
         fileList.Add(file);
       }
+      // sorting
+      fileList.Sort((a, b) => b.attitudeList.Count - a.attitudeList.Count);
+      foreach(FileStructure file in fileList)
+      {
+        Debug.Log(file.attitudeFilePath + ":" + file.attitudeList.Count);
+      }
       Debug.Log("Reading file done…");
       return fileList;
     }
