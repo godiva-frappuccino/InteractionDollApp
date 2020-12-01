@@ -9,7 +9,9 @@ public class ScrollViewController : MonoBehaviour
 {
     public GameObject buttonPrefab;
     public GameObject popUp;
+    public GameObject audioScrollView;
     public Button removeFileButton;
+    public Button setAudioButton;
     public static string selectedFilePath;
     // Start is called before the first frame update
     void Start()
@@ -24,6 +26,7 @@ public class ScrollViewController : MonoBehaviour
     {
       // if only button pressed update
     }
+
 
     void UpdateList()
     {
@@ -48,21 +51,18 @@ public class ScrollViewController : MonoBehaviour
         i += 1; // index start from 1.
       }
     }
-    public void ViewPopUp(string name, string path)
+
+    public void ViewPopUp(string behaviorName, string path)
     {
       selectedFilePath = path;
-      Debug.Log("popup: " + name + ":" + path);
+      Debug.Log("popup: " + behaviorName + ":" + path);
       SetActivePopUp(true);
-      popUp.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(name);
+      popUp.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(behaviorName);
       string removePath = path + "";
       removeFileButton.onClick.RemoveAllListeners();
       removeFileButton.onClick.AddListener(() => {
         RemoveBehaviorFile(removePath);
       });
-      /*
-      popUp.GetComponentInChildren<Button>().onClick.AddListener(() => {
-        RemoveBehaviorFile(path);
-      });*/
     }
     public void RemoveBehaviorFile(string removePath)
     {

@@ -11,6 +11,7 @@ public class Detector : MonoBehaviour
     GameObject kawauso;
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
     Quaternion initialRotation;
+
     int maxQueueSize = 50;
     float lastSpeakedTime;
     float minSpeakSpan = 3.0f;
@@ -21,6 +22,8 @@ public class Detector : MonoBehaviour
     //TextToSpeech tts;
     [SerializeField]
     GameObject voicePrefab;
+
+    public GameObject voiceText;
 
     // Start is called before the first frame update
     void Start()
@@ -69,6 +72,8 @@ public class Detector : MonoBehaviour
       if(Time.time - lastSpeakedTime < minSpeakSpan)
       {
         return;
+      }else{
+        voiceText.SetActive(false);
       }
       foreach(FileStructure file in wavAndAttitudeFileList)
       {
@@ -83,6 +88,7 @@ public class Detector : MonoBehaviour
           AudioSource source = obj.GetComponent<AudioSource>();
           source.clip = Resources.Load<AudioClip>(file.wavFilePath);
           source.Play();
+          voiceText.SetActive(true);
 
           alreadySayFlag = true;
           lastSpeakedTime = Time.time;
@@ -100,7 +106,6 @@ public class Detector : MonoBehaviour
       {
         FileStructure file;
         file.attitudeList = getAttitudeList(attitudeFilesPath[i]);
-        // TODO: fix type
         file.wavFilePath = "Voices/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
         Debug.Log(file.wavFilePath);
         file.attitudeFilePath = attitudeFilesPath[i];
