@@ -13,12 +13,14 @@ public class ScrollViewController : MonoBehaviour
     public Button removeFileButton;
     public Button setAudioButton;
     public static string selectedFilePath;
+
     // Start is called before the first frame update
     void Start()
     {
       selectedFilePath = null;
       UpdateList();
       SetActivePopUp(false);
+
     }
 
     // Update is called once per frame
@@ -30,7 +32,10 @@ public class ScrollViewController : MonoBehaviour
 
     void UpdateList()
     {
-      string path = "Assets/Resources/Behaviors/";
+      // TODO: check
+      //string path = "Assets/Resources/Behaviors/";
+      string path = Application.persistentDataPath;
+      //string path = RecordBehavior.GetSecureDataPath();
       string[] files = Directory.GetFiles(path, "*.txt");
       GameObject contentField = GameObject.Find("Content");
       foreach(Transform buttonTransform in contentField.gameObject.transform)

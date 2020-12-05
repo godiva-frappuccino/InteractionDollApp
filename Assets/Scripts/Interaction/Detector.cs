@@ -12,11 +12,13 @@ public class Detector : MonoBehaviour
     Queue<Quaternion> attitudeQueue = new Queue<Quaternion>();
     Quaternion initialRotation;
 
-    int maxQueueSize = 50;
+
+    int maxQueueSize = 75;
     float lastSpeakedTime;
     float minSpeakSpan = 3.0f;
+    float minDisplayTime = 1.5f;
     bool flag = false;
-    float similarityThresh = 0.80f;
+    float similarityThresh = 0.90f;
     // for datas preserved
     List<FileStructure> wavAndAttitudeFileList;
     //TextToSpeech tts;
@@ -24,25 +26,38 @@ public class Detector : MonoBehaviour
     GameObject voicePrefab;
 
     public GameObject voiceText;
+    public GameObject voiceContentPanel;
+    public Text voiceContentText;
+    public Text debugText;
 
     // Start is called before the first frame update
     void Start()
     {
+      voiceContentPanel.SetActive(false);
+      voiceText.SetActive(false);
       kawauso = GameObject.Find("kawauso_for_app2");
       initialRotation = Input.gyro.attitude;
       wavAndAttitudeFileList = getWavAndAttitudeFileList();
       lastSpeakedTime = Time.time;
+      /*
+      // testing
+      GameObject obj = Instantiate(voicePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+      AudioSource source = obj.GetComponent<AudioSource>();
+      //source.clip = Resources.Load<AudioClip>("Voices/cat2");
+      source.Play();
+      */
     }
 
     // Update is called once per frame
     void Update()
     {
-      //tts.Speak("Hello");
+
       m_gyro = Input.gyro;
       if(m_gyro != null)
       {
         Quaternion rotation = kawauso.transform.rotation;
         attitudeQueue.Enqueue(rotation * Quaternion.Euler(0, initialRotation.y, 0));
+
       }
       if(attitudeQueue.Count > maxQueueSize)
       {
@@ -52,43 +67,56 @@ public class Detector : MonoBehaviour
         }
       }
       bool alreadySayFlag = false;
-
       List<Quaternion> sensorAttitudeList = new List<Quaternion>();
       sensorAttitudeList.AddRange(attitudeQueue.ToArray());
       if(sensorAttitudeList.Count < maxQueueSize)
       {
         return;
       }
+      /*
+      // For analyzing
       if(flag)
       {
         for(int i = 0; i < wavAndAttitudeFileList.Count; i++)
         {
           double similarlity = getSimilarlity(wavAndAttitudeFileList[i].attitudeList, sensorAttitudeList);
-          RecordValuesInEuler(wavAndAttitudeFileList[i].attitudeList, "data" + i + ".csv");
+          //RecordValuesInEuler(wavAndAttitudeFileList[i].attitudeList, "data" + i + ".csv");
         }
-        RecordValuesInEuler(sensorAttitudeList, "sensor.csv");
+        //RecordValuesInEuler(sensorAttitudeList, "sensor.csv");
         flag = false;
       }
+      */
       if(Time.time - lastSpeakedTime < minSpeakSpan)
       {
+        if(Time.time - lastSpeakedTime > minDisplayTime)
+        {
+          voiceText.SetActive(false);
+          //voiceContentPanel.SetActive(false);
+          voiceContentText.text = "";
+        }
         return;
       }else{
-        voiceText.SetActive(false);
       }
+      debugText.text = "";
       foreach(FileStructure file in wavAndAttitudeFileList)
       {
         double similarlity = getSimilarlity(sensorAttitudeList, file.attitudeList);
-        //Debug.Log(file.attitudeFilePath + ":" + similarlity);
+        debugText.text += file.voiceContentText + ":" + similarlity + "  ";
+
         if(similarlity > similarityThresh && !alreadySayFlag)
         {
-          Debug.Log("Similar!!!!:" + file.attitudeFilePath);
           // TODO: implement
-          // say(wavFilePath);
+          /*
           GameObject obj = Instantiate(voicePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
           AudioSource source = obj.GetComponent<AudioSource>();
           source.clip = Resources.Load<AudioClip>(file.wavFilePath);
           source.Play();
+          Debug.Log("playing:" + file.wavFilePath);
+          */
           voiceText.SetActive(true);
+          voiceContentPanel.SetActive(true);
+          voiceContentText.text = file.voiceContentText;
+
 
           alreadySayFlag = true;
           lastSpeakedTime = Time.time;
@@ -97,26 +125,31 @@ public class Detector : MonoBehaviour
     }
     List<FileStructure> getWavAndAttitudeFileList()
     {
-      string attitudePath = "Assets/Resources/Behaviors/";
-      string wavPath = "Assets/Resources/Voices/";
-      string[] wavFilesPath = Directory.GetFiles(wavPath, "*.mp3");
+      //TODO: check
+      //string attitudePath = "Assets/Resources/Behaviors/";
+      string attitudePath = Application.persistentDataPath;
+      //string attitudePath = RecordBehavior.GetSecureDataPath();
+      //string wavPath = "Assets/Resources/Voices/";
+
+      //string[] wavFilesPath = Directory.GetFiles(wavPath, "*.mp3");
       string[] attitudeFilesPath = Directory.GetFiles(attitudePath, "*.txt");
+
       List<FileStructure> fileList = new List<FileStructure>();
       for(int i = 0; i < attitudeFilesPath.Length; i++)
       {
         FileStructure file;
         file.attitudeList = getAttitudeList(attitudeFilesPath[i]);
-        file.wavFilePath = "Voices/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
-        Debug.Log(file.wavFilePath);
+        // TODO; check
+        file.wavFilePath = "tmp";
+        //file.wavFilePath = "Voices/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
+        //file.wavFilePath = Application.persistentDataPath + "/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
+        //file.wavFilePath = wavFilesPath + "/" + System.IO.Path.GetFileNameWithoutExtension(wavFilesPath[UnityEngine.Random.Range(0, wavFilesPath.Length)]);
         file.attitudeFilePath = attitudeFilesPath[i];
+        file.voiceContentText = System.IO.Path.GetFileNameWithoutExtension(attitudeFilesPath[i]);
         fileList.Add(file);
       }
       // sorting
       fileList.Sort((a, b) => b.attitudeList.Count - a.attitudeList.Count);
-      foreach(FileStructure file in fileList)
-      {
-        Debug.Log(file.attitudeFilePath + ":" + file.attitudeList.Count);
-      }
       Debug.Log("Reading file done…");
       return fileList;
     }
@@ -139,7 +172,7 @@ public class Detector : MonoBehaviour
     double getSimilarlity(List<Quaternion> sensorList, List<Quaternion> storedList)
     {
       double diffSum = 0.0;
-      double thresh = (double)Mathf.Cos(30.0f /180.0f*3.14f);
+      double thresh = (double)Mathf.Cos(10.0f /180.0f*3.14f);
       int minListLength = Math.Min(storedList.Count, sensorList.Count);
 
       for(int i=0; i < minListLength; i++)
@@ -152,6 +185,7 @@ public class Detector : MonoBehaviour
         //diffSum += (double)Mathf.Pow(Math.Abs(getGyroDiff(sensorList[i], storedList[i])), 2);
       }
       double diffAverage = diffSum / (double)minListLength;
+      debugText.text += (minListLength - diffSum) + "/" + minListLength;
       return 1 - diffAverage;
     }
     void RecordValuesInEuler(List<Quaternion> quaternionList, string filePath)
@@ -177,4 +211,5 @@ public struct FileStructure
   public string attitudeFilePath;
   public string wavFilePath;
   public List<Quaternion> attitudeList;
+  public string voiceContentText;
 }

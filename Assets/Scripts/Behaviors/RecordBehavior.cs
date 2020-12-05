@@ -48,7 +48,11 @@ public class RecordBehavior : MonoBehaviour
           FinishRecord();
         }
         timerText.text = timerTime.ToString("F1");
-        filename = "Assets/Resources/Behaviors/" + behaviorName + ".txt";
+        //TODO:check
+        //filename = "Assets/Resources/Behaviors/" + behaviorName + ".txt";
+        filename = Application.persistentDataPath + "/" + behaviorName+".txt";
+        //filename = GetSecureDataPath() + "/" + behaviorName + ".txt";
+        Debug.Log(filename);
         if(!File.Exists(filename))
         {
           File.CreateText(filename).Dispose();
@@ -65,6 +69,7 @@ public class RecordBehavior : MonoBehaviour
             writer.WriteLine(toWrite);
             //writer.WriteLine(m_gyro.attitude);
             }
+          writer.Flush();
           writer.Close();
         }
       }
@@ -100,4 +105,21 @@ public class RecordBehavior : MonoBehaviour
       bool isActive = value;
       displayText.enabled = value;
     }
+    /*
+    public static string GetSecureDataPath()
+    {
+    #if !UNITY_EDITOR && UNITY_ANDROID
+        using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+        using (var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+        using (var getFilesDir = currentActivity.Call<AndroidJavaObject>("getFilesDir"))
+        {
+            string secureDataPathForAndroid = getFilesDir.Call<string>("getCanonicalPath");
+            return secureDataPathForAndroid;
+        }
+    #else
+        // TODO: 本来は各プラットフォームに対応した処理が必要
+        return Application.persistentDataPath;
+    #endif
+    }
+    */
 }
